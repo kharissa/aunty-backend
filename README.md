@@ -1,29 +1,17 @@
 # Aunty Backend Template
 
-## Download
+## Download Repo
+
 1. Clone repository on your local machine.
 ```
-git clone "url you just copied"
+git clone git@github.com:kharissa/aunty-backend.git
 ```
 2. Enter your repository
 ```
 cd aunty-dev
 ```
-3. Create a branch
-```
-git checkout -b <feature-name>
-```
-4. Make changes, add changes to your commit
-```
-git add <changed_file_name>
-git commit -m "Added <something> to <somewhere>"
-```
-5. Push changes to your branch
-```
-git push origin <feature-name>
-```
 
-## Install
+## Install Dependencies
 
 1. Delete `peewee-db-evolve==3.7.0` from `requirements.txt` during the first installation.
 
@@ -76,7 +64,21 @@ createdb aunty_dev
 python migrate.py
 ```
 
-----
+## Start Working
+
+3. Create a branch
+```
+git checkout -b <feature-name>
+```
+4. Start making changes
+```
+git add <changed_file_name>
+git commit -m "Added <something> to <somewhere>"
+```
+5. Push changes to your branch
+```
+git push origin <feature-name>
+```
 
 ## Starting Server
 
