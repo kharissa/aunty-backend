@@ -1,15 +1,10 @@
 # Aunty Backend Template
 
 ## Download Repo
-
-1. Clone repository on your local machine.
 ```
 git clone git@github.com:kharissa/aunty-backend.git
 ```
-2. Enter your repository
-```
-cd aunty-dev
-```
+
 
 ## Install Dependencies
 
@@ -66,16 +61,16 @@ python migrate.py
 
 ## Start Working
 
-3. Create a branch
+1. Create a branch
 ```
 git checkout -b <feature-name>
 ```
-4. Start making changes
+2. Start making changes
 ```
 git add <changed_file_name>
 git commit -m "Added <something> to <somewhere>"
 ```
-5. Push changes to your branch
+3. Push changes to your branch
 ```
 git push origin <feature-name>
 ```
