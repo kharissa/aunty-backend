@@ -5,6 +5,10 @@
 git clone git@github.com:kharissa/aunty-backend.git
 ```
 
+## Create conda environment
+```
+conda create -n "aunty_backend"
+```
 
 ## Install Dependencies
 
@@ -23,7 +27,7 @@ git clone git@github.com:kharissa/aunty-backend.git
 
 6. Create a `.env` file at directory root.
 
-7. Enter the following in your terminal to generate a random secret key. 
+7. Enter the following in your terminal to generate a random secret key.
 
 ```
 python -c 'import os; print(os.urandom(32))'
