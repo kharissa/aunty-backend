@@ -1,8 +1,9 @@
 from models.base_model import BaseModel
 import peewee as pw
+from flask_login import UserMixin
 from peewee_validates import ModelValidator, StringField, validate_email
 
-class User(BaseModel):
+class User(BaseModel, UserMixin):
     email = pw.CharField(unique=True)
     password = pw.CharField()
     first_name = pw.CharField()
