@@ -1,5 +1,6 @@
 from models.base_model import BaseModel
 import peewee as pw
+import datetime
 from peewee_validates import ModelValidator, StringField, validate_email
 
 class User(BaseModel):
@@ -15,22 +16,22 @@ class User(BaseModel):
     language_secondary = pw.CharField(null=True)
     verified = pw.BooleanField(default=False)
 
-    # save() function returns error
-        # File "/.../aunty-backend/models/user.py", line 23, in save
-        # self.errors.update(validator.errors)
-        # AttributeError: 'User' object has no attribute 'errors'
+    def save(self, *args, **kwargs):
+        # Ensure all fields are entered and email is valid
+        validator = type(self).CustomValidator(self)
+        validator.validate()
+        self.errors = validator.errors
 
-    # def save(self, *args, **kwargs):
-    #     # Ensure unique email and username
-    #     validator = ModelValidator(self)
-    #     validator.validate()
-    #     self.errors.update(validator.errors)
-
-    #     if self.errors:
-    #         return 0
-    #     else:
-    #         self.updated_at = datetime.datetime.now()
-    #         return super(BaseModel, self).save(*args, **kwargs)
+        # Ensure unique email and username
+        validator = ModelValidator(self)
+        validator.validate()
+        self.errors.update(validator.errors)
+        
+        if self.errors:
+            return 0
+        else:
+            self.updated_at = datetime.datetime.now()
+            return super(BaseModel, self).save(*args, **kwargs)
 
     class CustomValidator(ModelValidator):
         email = StringField(required=True, validators=[validate_email()])
