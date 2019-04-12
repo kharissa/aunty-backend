@@ -1,5 +1,6 @@
 from models.base_model import BaseModel
 import peewee as pw
+from peewee_validates import ModelValidator, StringField, validate_email
 
 class User(BaseModel):
     email = pw.CharField(unique=True)
@@ -14,12 +15,22 @@ class User(BaseModel):
     language_secondary = pw.CharField(null=True)
     verified = pw.BooleanField(default=0)
 
-    def validate(self):
-        duplicate_email = User.get_or_none(User.email == self.email)
-        if duplicate_email:
-            self.errors.append('Email has been registered.')
-
     def save(self, *args, **kwargs):
-        # self.validate()
-        # validate the user fields
-        pass
+        # Ensure unique email and username
+        validator = ModelValidator(self)
+        validator.validate()
+        self.errors.update(validator.errors)
+
+        if self.errors:
+            return 0
+        else:
+            self.updated_at = datetime.datetime.now()
+            return super(BaseModel, self).save(*args, **kwargs)
+
+    class CustomValidator(ModelValidator):
+        email = StringField(required=True, validators=[validate_email()])
+
+    class Meta:
+        messages = {
+            'email.validators': 'Enter a correct email address.'
+        }

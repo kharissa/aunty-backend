@@ -1,7 +1,7 @@
 from models.base_model import BaseModel
 import peewee as pw
 
-class BuiltInContact(BaseModel):
+class SafeLocation(BaseModel):
     category = pw.CharField()
     name = pw.CharField()
     description = pw.CharField(max_length=3000)
