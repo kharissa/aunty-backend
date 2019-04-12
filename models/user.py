@@ -13,7 +13,7 @@ class User(BaseModel):
     nationality = pw.CharField(max_length=2, null=True)
     language_primary = pw.CharField(null=True)
     language_secondary = pw.CharField(null=True)
-    verified = pw.BooleanField(default=0)
+    verified = pw.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         # Ensure unique email and username
