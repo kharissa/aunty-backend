@@ -15,6 +15,11 @@ class User(BaseModel):
     language_secondary = pw.CharField(null=True)
     verified = pw.BooleanField(default=False)
 
+    # save() function returns error
+        # File "/.../aunty-backend/models/user.py", line 23, in save
+        # self.errors.update(validator.errors)
+        # AttributeError: 'User' object has no attribute 'errors'
+
     def save(self, *args, **kwargs):
         # Ensure unique email and username
         validator = ModelValidator(self)
