@@ -7,7 +7,7 @@ from helpers import encode_auth_token, decode_auth_token
 users_api_blueprint = Blueprint('users_api', __name__, template_folder='templates')
 
 @users_api_blueprint.route('/', methods=['POST'])
-def index():
+def create():
     req_data = request.get_json()
     first_name = req_data['firstName']
     last_name = req_data['lastName']
@@ -16,23 +16,23 @@ def index():
     nationality = req_data['nationality']
     hashed_password = generate_password_hash(req_data['password'])
     
-    u = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, dob=date_of_birth, nationality=nationality)
+    user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, dob=date_of_birth, nationality=nationality)
 
-    if u.save():
-        token = encode_auth_token(u)
+    if user.save():
+        token = encode_auth_token(user)
         return jsonify({
             'auth_token': token,
             'message': 'Successfully created the account. Please log in.',
             'status': 'success',
             'user': {
-                'id': u.id,
-                'first_name': u.first_name,
-                'last_name': u.last_name,
-                'email': u.email
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email
             }
         })
     else:
-        errors = u.errors
+        errors = user.errors
         return jsonify({
             'status': 'failed',
             'message': errors
