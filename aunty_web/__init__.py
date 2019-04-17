@@ -16,7 +16,7 @@ def internal_server_error(e):
 
 @app.route("/")
 @app.route('/<path:path>')
-def home():
+def home(path):
     return render_template('index.html')
 
 @app.route("/manifest.json")
