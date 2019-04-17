@@ -1,5 +1,6 @@
 import jwt
 from models.user import User
+from models.personal_contact import PersonalContact
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash
 from helpers import encode_auth_token, decode_auth_token
@@ -37,3 +38,45 @@ def create():
             'status': 'failed',
             'message': errors
         })
+
+
+@users_api_blueprint.route('/<user_id>/', methods=['GET'])
+def show(user_id):
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Not authorization header.'
+        }])
+
+    decoded = decode_auth_token(token)
+    user = User.get(User.id == decoded)
+    if user:
+        contacts = PersonalContact.select().where(PersonalContact.user_id == user.id)
+        return jsonify({
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'dob': user.dob,
+            'passport_num': user.passport_num,
+            'nationality': user.nationality,
+            'language_primary': user.language_primary,
+            'language_secondary': user.language_secondary,
+            'verified': user.verified,
+            'personalContacts':
+                [{'id': contact.id,
+                  'name': contact.name,
+                  'relationship': contact.relationship,
+                  'location': contact.location,
+                  'priority': contact.priority,
+                  'phone_number': contact.phone_number,
+                  'email': contact.email} for contact in contacts]}
+        )
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Authentication failed.'
+        }])
