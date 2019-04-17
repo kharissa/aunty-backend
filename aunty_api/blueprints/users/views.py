@@ -40,8 +40,8 @@ def create():
         })
 
 
-@users_api_blueprint.route('/<user_id>/', methods=['GET'])
-def show(user_id):
+@users_api_blueprint.route('/me/', methods=['GET', 'PUT'])
+def show_current_user():
     auth_header = request.headers.get('Authorization')
 
     if auth_header:
@@ -55,26 +55,38 @@ def show(user_id):
     decoded = decode_auth_token(token)
     user = User.get(User.id == decoded)
     if user:
-        contacts = PersonalContact.select().where(PersonalContact.user_id == user.id)
-        return jsonify({
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'dob': user.dob,
-            'passport_num': user.passport_num,
-            'nationality': user.nationality,
-            'language_primary': user.language_primary,
-            'language_secondary': user.language_secondary,
-            'verified': user.verified,
-            'personalContacts':
-                [{'id': contact.id,
-                  'name': contact.name,
-                  'relationship': contact.relationship,
-                  'location': contact.location,
-                  'priority': contact.priority,
-                  'phone_number': contact.phone_number,
-                  'email': contact.email} for contact in contacts]}
-        )
+        if request.method == "GET":
+            return jsonify({
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'dob': user.dob,
+                'passport_num': user.passport_num,
+                'nationality': user.nationality,
+                'language_primary': user.language_primary,
+                'language_secondary': user.language_secondary,
+                'verified': user.verified})
+        elif request.method == "PUT":
+            req_data = request.get_json()
+            user.first_name = req_data['firstName'] or user.first_name
+            user.last_name = req_data['lastName'] or user.last_name
+            user.email = req_data['email'] or user.email
+            user.nationality = req_data['nationality'] or user.nationality
+            user.passport_num = req_data['passportNum'] or user.passport_num
+            user.language_primary = req_data['languagePrimary'] or user.language_primary
+            user.language_secondary = req_data['languageSecondary'] or user.language_secondary
+            if req_data['password']:
+                user.password = generate_password_hash(req_data['password']) 
+            if user.save():
+                return jsonify([{
+                    'status': 'success',
+                    'message': 'Successfully updated the user details.'
+                }])
+            else:
+                return jsonify([{
+                    'status': 'failed',
+                    'message': 'Unable to update user.'
+                }])
     else:
         return jsonify([{
             'status': 'failed',
