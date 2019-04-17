@@ -16,4 +16,16 @@ def internal_server_error(e):
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+    return render_template('index.html')
+
+@app.route("/manifest.json")
+def manifest():
+    return app.send_static_file("build/manifest.json")
+
+@app.route("/service-worker.js")
+def service():
+    return app.send_static_file("build/service-worker.js")
+
+@app.route("/precache-manifest.4ce3c1861f06c49a5377ecf892738541.js")
+def precache():
+    return app.send_static_file("build/precache-manifest.4ce3c1861f06c49a5377ecf892738541.js")
