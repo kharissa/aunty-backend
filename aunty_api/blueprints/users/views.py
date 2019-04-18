@@ -15,24 +15,35 @@ def create():
     email = req_data['email']
     date_of_birth = req_data['dateOfBirth']
     nationality = req_data['nationality']
+    contact_name = req_data['contactName']
+    contact_email = req_data['contactEmail']
     hashed_password = generate_password_hash(req_data['password'])
     
     user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, dob=date_of_birth, nationality=nationality)
 
     if user.save():
         token = encode_auth_token(user)
-        return jsonify({
-            'auth_token': token,
-            'message': 'Successfully created the account. Please log in.',
-            'status': 'success',
-            'user': {
-                'id': user.id,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email
-            }
-        })
-    else:
+        contact = PersonalContact(
+            user=user, name=contact_name, email=contact_email)
+        if contact.save():
+            return jsonify({
+                'auth_token': token,
+                'message': 'Successfully created the account. Please log in.',
+                'status': 'success',
+                'user': {
+                    'id': user.id,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'email': user.email
+                }
+            })
+        else:
+            errors = contact.errors
+            return jsonify({
+                'status': 'failed',
+                'message': errors
+            })
+    elif user.errors:
         errors = user.errors
         return jsonify({
             'status': 'failed',
