@@ -39,9 +39,7 @@ def create():
             req_data = request.get_json()
             req_data['name']
             req_data['email']
-            req_data['location']
-            req_data['relationship']
-            contact = PersonalContact(name=req_data['name'], email=req_data['email'], relationship=req_data['relationship'], location=req_data['location'], user=user)
+            contact = PersonalContact(name=req_data['name'], email=req_data['email'], user=user)
             
             if contact.save():
                 return jsonify([{
@@ -50,9 +48,7 @@ def create():
                     'contact': {
                         'id': contact.id,
                         'name': contact.name,
-                        'location': contact.location,
-                        'email': contact.email,
-                        'relationship': contact.relationship
+                        'email': contact.email
                     }
                 }])
             else:
