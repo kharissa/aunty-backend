@@ -1,6 +1,5 @@
 asn1crypto==0.24.0
 autopep8==1.4.3
-certifi==2019.3.9
 cffi==1.12.2
 Click==7.0
 colorama==0.4.1
@@ -15,7 +14,6 @@ Jinja2==2.10.1
 jsmin==2.2.2
 MarkupSafe==1.1.0
 peewee==3.9.3
-peewee-db-evolve==3.7.0
 peewee-validates==1.0.7
 pipenv==2018.11.26
 psycopg2-binary==2.7.7
@@ -29,3 +27,4 @@ virtualenv==16.4.3
 virtualenv-clone==0.5.3
 webassets==0.12.1
 Werkzeug==0.14.1
+peewee-db-evolve==3.7.0
