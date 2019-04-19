@@ -16,7 +16,7 @@ def create():
     date_of_birth = req_data['dateOfBirth']
     nationality = req_data['nationality']
     hashed_password = generate_password_hash(req_data['password'])
-    
+
     user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, dob=date_of_birth, nationality=nationality)
 
     if user.save():
@@ -76,7 +76,7 @@ def show_current_user():
             user.language_primary = req_data['languagePrimary'] or user.language_primary
             user.language_secondary = req_data['languageSecondary'] or user.language_secondary
             if req_data['password']:
-                user.password = generate_password_hash(req_data['password']) 
+                user.password = generate_password_hash(req_data['password'])
             if user.save():
                 return jsonify([{
                     'status': 'success',

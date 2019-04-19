@@ -1,3 +1,4 @@
+import jwt
 from models.user import User
 from models.itinerary_pin import ItineraryPin
 from models.map_pin import MapPin
@@ -31,6 +32,8 @@ def create_map_pin():
                     'status': 'success',
                     'pin': {
                         'id': map_pin.id,
+                        'name': map_pin.name,
+                        'category': map_pin.category,
                         'user_id': map_pin.user_id,
                         'longitude': map_pin.longitude,
                         'latitude': map_pin.latitude,
@@ -49,6 +52,7 @@ def create_map_pin():
                 'status': 'failed',
                 'message': 'User cannot be found.'
             }])
+
     elif request.method == "GET":
         auth_header = request.headers.get('Authorization')
 
@@ -63,22 +67,26 @@ def create_map_pin():
         decoded = decode_auth_token(token)
         user = User.get(User.id == decoded)
 
-        if user: 
+        if user:
             public_pins = MapPin.select().where(MapPin.is_public == True)
             private_pins = MapPin.select().where(
                 MapPin.user_id == user.id, MapPin.is_public == False)
-                
-            return jsonify({'publicPins': 
+
+            return jsonify({'publicPins':
                 [{'id': public_pin.id,
                 'longitude': str(public_pin.longitude),
                 'latitude': str(public_pin.latitude),
+                'category': public_pin.category,
+                'name': public_pin.name,
                 'is_safe': public_pin.is_safe,
                 'category': public_pin.category,
                 'radius': public_pin.radius} for public_pin in public_pins],
-                'privatePins': 
+                'privatePins':
                 [{'id': private_pin.id,
                   'longitude': str(private_pin.longitude),
                   'latitude': str(private_pin.latitude),
+                  'category': private_pin.category,
+                  'name': private_pin.name,
                   'is_safe': private_pin.is_safe,
                   'category': private_pin.category,
                   'radius': private_pin.radius} for private_pin in private_pins]}
@@ -129,6 +137,7 @@ def create_itinerary_pin():
                 'status': 'failed',
                 'message': 'User cannot be found.'
             }])
+
     elif request.method == "GET":
         auth_header = request.headers.get('Authorization')
 
