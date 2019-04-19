@@ -34,6 +34,8 @@ def create_map_pin():
                         'user_id': map_pin.user_id,
                         'longitude': map_pin.longitude,
                         'latitude': map_pin.latitude,
+                        'name': map_pin.name,
+                        'category': map_pin.category,
                         'is_public': map_pin.is_public,
                         'is_safe': map_pin.is_safe
                     }
@@ -63,24 +65,26 @@ def create_map_pin():
         decoded = decode_auth_token(token)
         user = User.get(User.id == decoded)
 
-        if user: 
+        if user:
             public_pins = MapPin.select().where(MapPin.is_public == True)
             private_pins = MapPin.select().where(
                 MapPin.user_id == user.id, MapPin.is_public == False)
-                
-            return jsonify({'publicPins': 
+
+            return jsonify({'publicPins':
                 [{'id': public_pin.id,
                 'longitude': str(public_pin.longitude),
                 'latitude': str(public_pin.latitude),
                 'is_safe': public_pin.is_safe,
                 'category': public_pin.category,
+                'name': public_pin.name,
                 'radius': public_pin.radius} for public_pin in public_pins],
-                'privatePins': 
+                'privatePins':
                 [{'id': private_pin.id,
                   'longitude': str(private_pin.longitude),
                   'latitude': str(private_pin.latitude),
                   'is_safe': private_pin.is_safe,
                   'category': private_pin.category,
+                  'name': private_pin.name,
                   'radius': private_pin.radius} for private_pin in private_pins]}
             )
         else:
