@@ -8,5 +8,5 @@ class PersonalContact(BaseModel):
     relationship = pw.CharField(null=True)
     location = pw.BooleanField(null=True) # 0 = Local, 1 = Foreign
     priority = pw.IntegerField(null=True) # allow users to save up to 5 contacts & rank them by priority
-    email = pw.CharField()
-    phone_number = pw.CharField(null=True)
+    email = pw.CharField(null=True)
+    phone_number = pw.CharField()

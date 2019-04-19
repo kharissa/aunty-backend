@@ -16,7 +16,7 @@ def create():
     date_of_birth = req_data['dateOfBirth']
     nationality = req_data['nationality']
     contact_name = req_data['contactName']
-    contact_email = req_data['contactEmail']
+    contact_phone_number = req_data['contactPhone']
     hashed_password = generate_password_hash(req_data['password'])
     
     user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, dob=date_of_birth, nationality=nationality)
@@ -24,7 +24,7 @@ def create():
     if user.save():
         token = encode_auth_token(user)
         contact = PersonalContact(
-            user=user, name=contact_name, email=contact_email)
+            user=user, name=contact_name, phone_number=contact_phone_number)
         if contact.save():
             return jsonify({
                 'auth_token': token,
