@@ -28,7 +28,7 @@ def message():
     message = client.messages.create(
         to=phone_number, 
         from_=os.environ.get('TWILIO_PHONE_NUMBER'),
-        body=f"{contacts.name}, {user.first_name} {user.last_name} is in danger! Aunty very worried! Can you please help? Current latitude: {latitude}, longitude: {longitude}")
+        body=f"Hey, {user.first_name} {user.last_name} is in danger! Aunty very worried! Can you please help? Current latitude: {latitude}, longitude: {longitude}")
 
     if message.sid:
         return jsonify({
