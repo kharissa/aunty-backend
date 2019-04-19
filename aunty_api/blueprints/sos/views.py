@@ -1,4 +1,5 @@
 from models.user import User
+from models.personal_contact import PersonalContact
 from flask import Blueprint, jsonify, request
 from twilio.rest import Client
 from helpers import decode_auth_token
@@ -10,10 +11,18 @@ sos_api_blueprint = Blueprint('sos', __name__, template_folder='templates')
 def message():
     auth_header = request.headers.get('Authorization')
 
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Not authorization header.'
+        }])
+
     decoded = decode_auth_token(token)
     user = User.get(User.id == decoded)
 
-    contacts = PersonalContact.select().where(PersonalContact.user_id == user.id)
+    contacts = PersonalContact.get(PersonalContact.user_id == user.id)
     phone_number = contacts.phone_number
 
     req_data = request.get_json()
@@ -28,7 +37,7 @@ def message():
     message = client.messages.create(
         to=phone_number, 
         from_=os.environ.get('TWILIO_PHONE_NUMBER'),
-        body=f"Hey, {user.first_name} {user.last_name} is in danger! Aunty very worried! Can you please help? Current latitude: {latitude}, longitude: {longitude}")
+        body=f"{contacts.name}, {user.first_name} {user.last_name} is in danger! Aunty very worried! Can you please help? Current latitude: {latitude}, longitude: {longitude}")
 
     if message.sid:
         return jsonify({
