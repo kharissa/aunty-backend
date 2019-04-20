@@ -32,8 +32,8 @@ def create():
         dataUri = request.get_json()['dataUri']
         decoded_img = base64.b64decode(dataUri)
         current_time = str(datetime.datetime.now())
-        filename = f`{user.id}{current_time}.png`
-        aws_upload = upload_file_to_s3(decoded_img, app.config["S3_BUCKET"], filename)
+        filename = f'{user.id}{current_time}.png'
+        upload_file_to_s3(decoded_img, app.config["S3_BUCKET"], filename)
         image = Image(filename=filename, user=user)
 
         if image.save():
