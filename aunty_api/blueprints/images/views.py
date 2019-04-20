@@ -29,6 +29,7 @@ def create():
         ##########################
         # Upload Image to AWS S3 #
         ##########################
+        dataUri = request.get_json()['dataUri']
         decoded_img = base64.b64decode(dataUri)
         current_time = str(datetime.datetime.now())
         filename = f`{user.id}{current_time}.png`
