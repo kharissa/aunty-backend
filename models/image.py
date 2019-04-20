@@ -18,6 +18,5 @@ class Image(BaseModel):
 
     @hybrid_property
     def url(self):
-        pass
         # Add S3 location to config
-        # return f'{app.config["S3_LOCATION"]}/{self.image_path}'
+        return f'{app.config["S3_LOCATION"]}/{self.image_path}'

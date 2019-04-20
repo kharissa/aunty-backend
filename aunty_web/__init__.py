@@ -30,20 +30,3 @@ def service():
 @app.route("/precache-manifest.4ce3c1861f06c49a5377ecf892738541.js")
 def precache():
     return app.send_static_file("build/precache-manifest.4ce3c1861f06c49a5377ecf892738541.js")
-
-def upload_file_to_s3(file, bucket_name, acl="public-read"):
-    try:
-        s3.upload_fileobj(
-            file,
-            bucket_name,
-            file.filename,
-            ExtraArgs={
-                "ACL": acl,
-                "ContentType": file.content_type
-            }
-        )
-
-    except Exception as e:
-        # This is a catch all exception, edit this part to fit your needs.
-        print("Something Happened: ", e)
-        return e
