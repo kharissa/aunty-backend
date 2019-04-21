@@ -6,7 +6,7 @@ from helpers import decode_auth_token, s3
 from sightengine.client import SightengineClient
 from helpers import upload_file_to_s3
 import base64
-import time
+import datetime
 
 images_api_blueprint = Blueprint('images_api', __name__, template_folder='templates')
 
@@ -31,7 +31,7 @@ def create():
         ##########################
         dataUri = request.get_json()['dataUri']
         decoded_img = base64.b64decode(dataUri)
-        timestamp = str(time.time())
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = f'{user.id}-{timestamp}.png'
         s3.put_object(Body=dataUri, Bucket="gogaigai", Key=filename)
         image = Image(filename=filename, user=user)
