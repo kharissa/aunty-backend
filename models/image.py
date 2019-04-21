@@ -2,6 +2,7 @@ from models.base_model import BaseModel
 from models.user import User
 import peewee as pw
 from playhouse.hybrid import hybrid_property
+from config import S3_LOCATION
 
 class Image(BaseModel):
     user = pw.ForeignKeyField(User, backref="images")
@@ -19,4 +20,4 @@ class Image(BaseModel):
     @hybrid_property
     def url(self):
         # Add S3 location to config
-        return f'{app.config["S3_LOCATION"]}/{self.image_path}'
+        return f"{S3_LOCATION}/{self.filename}"

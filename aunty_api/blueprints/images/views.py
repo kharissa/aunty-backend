@@ -2,11 +2,11 @@ from app import app
 from models.user import User
 from models.image import Image
 from flask import Blueprint, jsonify, request, redirect, url_for
-from helpers import decode_auth_token
+from helpers import decode_auth_token, s3
 from sightengine.client import SightengineClient
 from helpers import upload_file_to_s3
 import base64
-import datetime
+import time
 
 images_api_blueprint = Blueprint('images_api', __name__, template_folder='templates')
 
@@ -31,13 +31,13 @@ def create():
         ##########################
         dataUri = request.get_json()['dataUri']
         decoded_img = base64.b64decode(dataUri)
-        current_time = str(datetime.datetime.now())
-        filename = f'{user.id}{current_time}.png'
-        upload_file_to_s3(decoded_img, app.config["S3_BUCKET"], filename)
+        timestamp = str(time.time())
+        filename = f'{user.id}-{timestamp}.png'
+        s3.put_object(Body=dataUri, Bucket="gogaigai", Key=filename)
         image = Image(filename=filename, user=user)
 
         if image.save():
-            image_url = iamge.url
+            image_url = image.url
             client = SightengineClient(app.config.get(
                 'SIGHTENGINE_USER'), app.config.get('SIGHTENGINE_SECRET'))
             output = client.check('nudity','wad','offensive', 'scam','face-attributes').set_url(image_url)
