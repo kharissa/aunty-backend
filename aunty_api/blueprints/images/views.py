@@ -41,15 +41,52 @@ def create():
             client = SightengineClient(app.config.get(
                 'SIGHTENGINE_USER'), app.config.get('SIGHTENGINE_SECRET'))
             output = client.check('nudity','wad','offensive', 'scam','face-attributes').set_url(image_url)
-            image.weapon = output['weapon']
-            image.alcohol = output['alcohol']
-            image.drugs = output['drugs']
-            image.male = output['faces'][0]['attributes']['male']
-            image.female = output['faces'][0]['attributes']['female']
-            image.minor = output['faces'][0]['attributes']['minor']
-            image.sunglasses = output['faces'][0]['attributes']['sunglasses']
-            image.scam = output['scam']['prob']
-            image.nudity = output['nudity']['safe']
+            
+            if 'weapon' in output:
+                image.weapon = output['weapon']
+            else:
+                image.weapon = '0'
+        
+            if 'alcohol' in output:
+                image.alcohol = output['alcohol']
+            else:
+                image.alcohol = '0'
+
+            if 'drugs' in output:
+                image.drugs = output['drugs']
+            else:
+                image.drugs = '0'
+
+            if 'male' in output:
+                image.male = output['faces'][0]['attributes']['male']
+            else:
+                image.male = '0'
+
+            if 'female' in output:
+                image.female = output['faces'][0]['attributes']['female']
+            else:
+                image.female = '0'
+
+            if 'minor' in output:
+                image.minor = output['faces'][0]['attributes']['minor']
+            else:
+                image.minor = '0'
+
+            if 'sunglasses' in output:
+                image.sunglasses = output['faces'][0]['attributes']['sunglasses']
+            else:
+                image.sunglasses = '0'
+
+            if 'scam' in output:
+                image.scam = output['scam']['prob']
+            else:
+                image.scam = '0'
+
+            if 'nudity' in output:
+                image.nudity = output['nudity']['safe']
+            else:
+                image.nudity = '0'
+
 
             if image.save():
                 return jsonify({
