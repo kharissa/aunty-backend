@@ -26,21 +26,30 @@ def create():
     user = User.get(User.id == decoded)
 
     if user:
-        ##########################
-        # Upload Image to AWS S3 #
-        ##########################
+        # Retrieving image in data uri scheme
         dataUri = request.get_json()['dataUri']
+
+        # Decoding into an image
         decoded_img = base64.b64decode(dataUri)
+
+        # Saving filename as user id and current datetime string
         current_time = str(datetime.datetime.now())
         filename = f'{user.id}{current_time}.png'
+
+        # Uploading image to AWS
         upload_file_to_s3(decoded_img, app.config["S3_BUCKET"], filename)
+
+        # Creating an image pw instance
         image = Image(filename=filename, user=user)
 
         if image.save():
-            image_url = iamge.url
+
+            # If image saves in DB, send to SightEngine API
             client = SightengineClient(app.config.get(
                 'SIGHTENGINE_USER'), app.config.get('SIGHTENGINE_SECRET'))
-            output = client.check('nudity','wad','offensive', 'scam','face-attributes').set_url(image_url)
+            output = client.check('nudity','wad','offensive', 'scam','face-attributes').set_url(image.url)
+
+            # Updating image with returned output from SightEngine
             image.weapon = output['weapon']
             image.alcohol = output['alcohol']
             image.drugs = output['drugs']
@@ -55,6 +64,7 @@ def create():
                 return jsonify({
                     'status': 'success',
                     'message': 'Image analyzed successfully.',
+                    'imageId': image.id,
                     'results': {
                         'weapon': image.weapon,
                         'alcohol': image.alcohol,
@@ -83,3 +93,43 @@ def create():
             'message': 'No user found.'
         })
 
+
+@images_api_blueprint.route('/<image_id>', methods=['GET'])
+def show(image_id):
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Not authorization header.'
+        }])
+
+    decoded = decode_auth_token(token)
+    user = User.get(User.id == decoded)
+
+    if user and image_id in user.images:
+        image = Image.get(Image.id == image_id)
+        return jsonify({
+            'status': 'success',
+            'message': 'Image retrieved successfully.',
+            'imageId': image.id,
+            'imageURL': image.url,
+            'results': {
+                'weapon': image.weapon,
+                'alcohol': image.alcohol,
+                'drugs': image.drugs,
+                'male': image.male,
+                'female': image.female,
+                'minor': image.minor,
+                'sunglasses': image.sunglasses,
+                'scam': image.scam,
+                'nudity': image.nudity
+            }
+        })
+    else:
+        return jsonify({
+            'status': 'failed',
+            'message': 'Unable to retrieve this image for this user.'
+        })
