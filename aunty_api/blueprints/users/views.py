@@ -135,7 +135,7 @@ def update():
         token = encode_auth_token(user)
         return jsonify({
             'auth_token': token,
-            'message': 'Successfully created the account. Please log in.',
+            'message': 'Successfully update account details.',
             'status': 'success',
             'user': {
                 'id': user.id,
