@@ -1,4 +1,5 @@
 from app import app
+import os
 from models.user import User
 from models.image import Image
 from flask import Blueprint, jsonify, request, redirect, url_for
@@ -45,8 +46,8 @@ def create():
         if image.save():
 
             # If image saves in DB, send to SightEngine API
-            client = SightengineClient(app.config.get(
-                'SIGHTENGINE_USER'), app.config.get('SIGHTENGINE_SECRET'))
+            client = SightengineClient(os.environ.get(
+                'SIGHTENGINE_USER'), os.environ.get('SIGHTENGINE_SECRET'))
             output = client.check('nudity','wad','offensive', 'scam','face-attributes').set_url(image.url)
 
             # Updating image with returned output from SightEngine
@@ -58,7 +59,7 @@ def create():
             image.minor = output['faces'][0]['attributes']['minor']
             image.sunglasses = output['faces'][0]['attributes']['sunglasses']
             image.scam = output['scam']['prob']
-            image.nudity = output['nudity']['safe']
+            image.nudity = output['nudity']['raw']
 
             if image.save():
                 return jsonify({
@@ -108,8 +109,9 @@ def show(image_id):
 
     decoded = decode_auth_token(token)
     user = User.get(User.id == decoded)
+    query = Image.select().where(Image.id == image_id, Image.user_id == user.id)
 
-    if user and image_id in user.images:
+    if user and query.exists():
         image = Image.get(Image.id == image_id)
         return jsonify({
             'status': 'success',
