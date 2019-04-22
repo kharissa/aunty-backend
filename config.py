@@ -3,7 +3,7 @@ import os
 S3_BUCKET                 = os.environ.get("S3_BUCKET")
 S3_KEY                    = os.environ.get("S3_KEY")
 S3_SECRET                 = os.environ.get("S3_SECRET")
-S3_LOCATION               = 'http://{}.s3.amazonaws.com/'.format(S3_BUCKET)
+S3_LOCATION               = f'https://s3.amazonaws.com/{S3_BUCKET}/'
 
 class Config(object):
     DEBUG = False
@@ -12,7 +12,7 @@ class Config(object):
     SECRET_KEY = os.environ.get(
         'SECRET_KEY') or os.urandom(32)
     S3_BUCKET = os.environ.get("S3_BUCKET")
-    S3_LOCATION = f'http://{S3_BUCKET}.s3.amazonaws.com/'
+    S3_LOCATION = f'https://s3.amazonaws.com/{S3_BUCKET}/'
 
 
 class ProductionConfig(Config):

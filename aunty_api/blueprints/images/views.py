@@ -8,6 +8,15 @@ from sightengine.client import SightengineClient
 from helpers import upload_file_to_s3
 import base64
 import datetime
+import boto3
+import botocore
+from config import S3_KEY, S3_SECRET, S3_BUCKET
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=S3_KEY,
+    aws_secret_access_key=S3_SECRET
+)
 
 images_api_blueprint = Blueprint('images_api', __name__, template_folder='templates')
 
@@ -29,16 +38,17 @@ def create():
     if user:
         # Retrieving image in data uri scheme
         dataUri = request.get_json()['dataUri']
-
+        
         # Decoding into an image
-        decoded_img = base64.b64decode(dataUri)
+        decoded_img = base64.b64decode(dataUri.split(",")[1])
 
         # Saving filename as user id and current datetime string
-        current_time = str(datetime.datetime.now())
-        filename = f'{user.id}{current_time}.png'
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        filename = f'{user.id}{current_time}.jpg'
 
         # Uploading image to AWS
-        upload_file_to_s3(decoded_img, app.config["S3_BUCKET"], filename)
+        s3.put_object(
+            Body=decoded_img, Bucket=app.config["S3_BUCKET"], Key=filename, ACL='public-read')
 
         # Creating an image pw instance
         image = Image(filename=filename, user=user)
@@ -49,19 +59,21 @@ def create():
             client = SightengineClient(os.environ.get(
                 'SIGHTENGINE_USER'), os.environ.get('SIGHTENGINE_SECRET'))
             output = client.check('nudity','wad','offensive', 'scam','face-attributes').set_url(image.url)
-
+            print(output)
             # Updating image with returned output from SightEngine
             image.weapon = output['weapon']
             image.alcohol = output['alcohol']
             image.drugs = output['drugs']
-            image.male = output['faces'][0]['attributes']['male']
-            image.female = output['faces'][0]['attributes']['female']
-            image.minor = output['faces'][0]['attributes']['minor']
-            image.sunglasses = output['faces'][0]['attributes']['sunglasses']
             image.scam = output['scam']['prob']
             image.nudity = output['nudity']['raw']
+            
+            if output['faces']:
+                image.male = output['faces'][0]['attributes']['male']
+                image.female = output['faces'][0]['attributes']['female']
+                image.minor = output['faces'][0]['attributes']['minor']
+                image.sunglasses = output['faces'][0]['attributes']['sunglasses']
 
-            if image.save():
+            if image.save() and output['status'] == 'success':
                 return jsonify({
                     'status': 'success',
                     'message': 'Image analyzed successfully.',
@@ -70,10 +82,10 @@ def create():
                         'weapon': image.weapon,
                         'alcohol': image.alcohol,
                         'drugs': image.drugs,
-                        'male': image.male,
-                        'female': image.female,
-                        'minor': image.minor,
-                        'sunglasses': image.sunglasses,
+                        'male': image.male or 0,
+                        'female': image.female or 0,
+                        'minor': image.minor or 0,
+                        'sunglasses': image.sunglasses or 0,
                         'scam': image.scam,
                         'nudity': image.nudity
                     }
