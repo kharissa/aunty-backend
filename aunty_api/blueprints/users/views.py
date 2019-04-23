@@ -34,7 +34,7 @@ def create():
                     'id': user.id,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
-                    'email': user.email
+                    'email': user.email,
                 }
             })
         else:
@@ -103,3 +103,54 @@ def show_current_user():
             'status': 'failed',
             'message': 'Authentication failed.'
         }])
+
+
+@users_api_blueprint.route('/update/', methods=['POST'])
+def update():
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Not authorization header.'
+        }])
+
+    decoded = decode_auth_token(token)
+    user = User.get(User.id == decoded)
+
+    req_data = request.get_json()
+    first_name = req_data['firstName']
+    last_name = req_data['lastName']
+    date_of_birth =  req_data['dateOfBirth']
+    first_language = req_data['firstLanguage']
+    second_language = req_data['secondLanguage']
+    passport_number = req_data['passportNum']
+
+    user_update = User.update(first_name=first_name, last_name=last_name, dob=date_of_birth, language_primary=first_language, language_secondary=second_language, passport_num=passport_number).where(User.id == user.id)
+    
+
+    if user_update.execute():
+        token = encode_auth_token(user)
+        return jsonify({
+            'auth_token': token,
+            'message': 'Successfully update account details.',
+            'status': 'success',
+            'user': {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'date_of_birth': user.dob,
+                'first_language':  user.language_primary,
+                'second_language': user.language_secondary,
+                'passport_num': user.passport_num
+            }
+        })
+    elif user_update.errors:
+        errors = user.errors
+        return jsonify({
+            'status': 'failed',
+            'message': errors
+        })

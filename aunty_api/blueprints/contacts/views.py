@@ -62,7 +62,7 @@ def create():
             'message': 'Authentication failed.'
         }])
 
-@contacts_api_blueprint.route('/<contact_id>', methods=['PUT'])
+@contacts_api_blueprint.route('/<contact_id>/', methods=['PUT'])
 def update(contact_id):
     auth_header = request.headers.get('Authorization')
 
@@ -82,8 +82,8 @@ def update(contact_id):
         req_data = request.get_json()
         contact.name = req_data['name'] or contact.name
         contact.relationship = req_data['relationship'] or contact.relationship
-        contact.location = req_data['location'] or contact.location
-        contact.priority = req_data['priority'] or contact.priority
+        # contact.location = req_data['location'] or contact.location
+        # contact.priority = req_data['priority'] or contact.priority
         contact.email = req_data['email'] or contact.email
         contact.phone_number = req_data['phoneNumber'] or contact.phone_number
 
