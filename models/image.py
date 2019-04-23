@@ -1,3 +1,5 @@
+from app import app
+import os
 from models.base_model import BaseModel
 from models.user import User
 import peewee as pw
@@ -19,4 +21,4 @@ class Image(BaseModel):
     @hybrid_property
     def url(self):
         # Add S3 location to config
-        return f'{app.config["S3_LOCATION"]}/{self.image_path}'
+        return f'{app.config["S3_LOCATION"]}{self.filename}'
