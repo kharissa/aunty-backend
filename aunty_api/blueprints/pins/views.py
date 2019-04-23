@@ -103,11 +103,12 @@ def create_itinerary_pin():
         longitude = req_data['longitude']
         latitude = req_data['latitude']
         start_time = req_data['startTime']
+        address = req_data['address']
         user = User.get(User.id == user_id)
 
         if user:
             itinerary_pin = ItineraryPin(
-                user=user, name=pin_name, longitude=longitude, latitude=latitude, start_time=start_time)
+                user=user, name=pin_name, longitude=longitude, latitude=latitude, start_time=start_time, address=address)
 
             if itinerary_pin.save():
                 return jsonify({
@@ -119,7 +120,8 @@ def create_itinerary_pin():
                         'longitude': str(itinerary_pin.longitude),
                         'latitude': str(itinerary_pin.latitude),
                         'start_time': itinerary_pin.start_time,
-                        'pinName': itinerary_pin.name
+                        'pinName': itinerary_pin.name,
+                        'address': itinerary_pin.address
                     }
                 })
             else:
@@ -156,11 +158,47 @@ def create_itinerary_pin():
                   'longitude': str(pin.longitude),
                   'latitude': str(pin.latitude),
                   'start_time': pin.start_time,
-                  'pinName': pin.name} for pin in pins]
+                  'address': pin.address,
+                  'pinName': pin.name} for pin in pins],
             )
         else:
             return jsonify([{
                 'status': 'failed',
                 'message': 'Authentication failed.'
             }])
+
+@pins_api_blueprint.route('/itinerary/delete/', methods=['POST'])
+def delete_itinerary_pin():
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Not authorization header.'
+        }])
+
+    decoded = decode_auth_token(token)
+    user = User.get(User.id == decoded)
+
+    req_data = request.get_json()
+    pin_id = req_data['pinId']
+
+    
+    pin = ItineraryPin.delete().where(ItineraryPin.id == pin_id)
+    
+    if pin.execute():
+        return jsonify([{
+        'status': 'success',
+        'message': 'Successfully delete itinerary pin.'
+    }])
+    else:
+        return jsonify([{
+            'status': 'failed',
+            'message': 'Unable to delete itinerary pin.'
+    }])
+
+
+
 
