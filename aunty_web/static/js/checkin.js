@@ -1,33 +1,37 @@
-var OneSignal = window.OneSignal || [];
+///////////////////////////////////
+//// Fix codes if time permits ////
+///////////////////////////////////
 
-// compare start time to current time
-var current_time = new Date().getTime()
-var itinerary_time = localStorage.getItem('itineraryTime');
-var countdown = current_time - itinerary_time
+// var OneSignal = window.OneSignal || [];
 
-console.log(current_time)
-console.log(itinerary_time)
-console.log(countdown)
+// // compare start time to current time
+// var current_time = new Date().getTime()
+// var itinerary_time = localStorage.getItem('itineraryTime');
+// var countdown = current_time - itinerary_time
 
-// start countdown
-setTimeout(checkin_one, countdown)
+// console.log(current_time)
+// console.log(itinerary_time)
+// console.log(countdown)
 
-//send tags to one signal to trigger first check in
-checkin_one = () => {
-    OneSignal.push(function () {
-        OneSignal.sendTags({
-            checkin: 1,
-        }, function (tagsSent) {
-            console.log(tagsSent)
-        });
-        OneSignal.on('notificationDisplay', function (event) {
-            // setTimeout(sos_trigger, 10000)
-            if ('popoverAllowClick') {
-                //if user checks in, redirect to home
-                console.log('popoverAllowClick')
-            } else {
-                console.log('trigger sos')
-            }
-        });
-    });
-}
+// // start countdown
+// setTimeout(checkin_one, countdown)
+
+// //send tags to one signal to trigger first check in
+// checkin_one = () => {
+//     OneSignal.push(function () {
+//         OneSignal.sendTags({
+//             checkin: 1,
+//         }, function (tagsSent) {
+//             console.log(tagsSent)
+//         });
+//         OneSignal.on('notificationDisplay', function (event) {
+//             // setTimeout(sos_trigger, 10000)
+//             if ('popoverAllowClick') {
+//                 //if user checks in, redirect to home
+//                 console.log('popoverAllowClick')
+//             } else {
+//                 console.log('trigger sos')
+//             }
+//         });
+//     });
+// }
