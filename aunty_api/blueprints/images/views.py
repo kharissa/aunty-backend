@@ -5,7 +5,6 @@ from models.image import Image
 from flask import Blueprint, jsonify, request, redirect, url_for
 from helpers import decode_auth_token
 from sightengine.client import SightengineClient
-from helpers import upload_file_to_s3
 import base64
 import datetime
 import boto3
