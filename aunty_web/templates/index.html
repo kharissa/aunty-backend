@@ -17,7 +17,21 @@
     </style>
     <link rel="manifest" href="/static/build/manifest.json" />
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-    <script src="../static/js/onesignal.js"></script>
+    <script>
+        var OneSignal = window.OneSignal || [];
+        OneSignal.push(function () {
+            OneSignal.init({
+                appId: "d76693f6-d95e-4cca-93c1-b875207242e9"
+            });
+            OneSignal.showNativePrompt();
+            OneSignal.sendTags({
+                latitude: localStorage.getItem('latitude'),
+                longitude: localStorage.getItem('longitude'),
+            }, function (tagsSent) {
+                console.log(tagsSent)
+            });
+        });
+    </script>
     <link href="/static/css/2.3ee777de.chunk.css" rel="stylesheet">
     <link href="/static/css/main.fa4f7639.chunk.css" rel="stylesheet">
     <title>Go Gai Gai with Aunty</title>
